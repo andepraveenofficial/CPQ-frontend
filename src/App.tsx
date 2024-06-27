@@ -1,11 +1,7 @@
-import React from 'react'
+import React from 'react';
 
-const App:React.FC = () => {
-  return (
-    <div>
-      CPQ Project
-    </div>
-  )
-}
+const App: React.FC = () => {
+  return <div>CPQ Project</div>;
+};
 
-export default App
+export default App;
