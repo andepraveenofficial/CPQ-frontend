@@ -1,7 +1,6 @@
 import React from 'react';
 
-
 const App: React.FC = () => {
-  return <Signup />;
+  return <>hello</>;
 };
 export default App;
