@@ -1,135 +1,165 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Form, Input, Button, Row, Col, Grid, Flex, Typography } from 'antd';
-import { LOGO_URL } from '../Services/images';
+import axios from 'axios';
+import type { FormProps } from 'antd';
+import { Button, Form, Input, Typography } from 'antd';
+import '../index.css';
+import { BASE_URL } from '../Services/APIs';
 
-import '../Styles/signupStyles.css';
-
-const { Title, Text } = Typography;
-const { useBreakpoint } = Grid;
-
-/*
-interface IData {
+type FieldType = {
   firstname: string;
   lastname: string;
   email: string;
   password: string;
-}
-*/
+};
 
 const Signup: React.FC = () => {
-  const screens = useBreakpoint();
-  const navigate = useNavigate();
+  const [firstname, setFirstname] = useState<string>('');
+  const [lastname, setLastname] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [signupErr, setSignupErr] = useState<string>('');
+  const { Title, Paragraph } = Typography;
 
-  /*
-     const onFormSubmit = (values: IData) => {
-     const data = values;
-     const jsonData = JSON.stringify(data);
-     console.log(jsonData);
-     };
-  */
+  const navigate = useNavigate();
+  const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
+    try {
+      await axios.post(`${BASE_URL}/api/v1/users`, values);
+      navigate('/signin');
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        if (err.response) {
+          setSignupErr(`${err.response.data.message} with that Email`);
+        }
+      }
+    }
+  };
+
+  const handleFirstnameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFirstname(e.target.value);
+  };
+  const handleLastnameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLastname(e.target.value);
+  };
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+  };
 
   return (
-    <Row
-      style={{ minHeight: '100vh', display: 'flex', justifyContent: 'center' }}
-    >
-      {/* Logo Section */}
-      {!screens.xs && (
-        <Col
-          xs={24}
-          sm={24}
-          md={12}
-          lg={12}
-          xl={12}
-          className="section"
-          style={{ backgroundColor: '#06D001' }}
-        >
-          <Flex justify="center" align="center" style={{ height: '100%' }}>
-            <img
-              src={LOGO_URL}
-              alt="Logo"
-              style={{ maxWidth: '100%', height: 'auto', maxHeight: '200px' }}
-            />
-          </Flex>
-        </Col>
-      )}
+    <div className="signin-page">
+      <div className="left-side">
+        <div className="logo">
+          <h1>CPQ</h1>
+        </div>
+      </div>
+      <div className="login-container">
+        <div className="cpq-heading-logo">
+          <h1>CPQ</h1>
+        </div>
+        <div className="login-form">
+          <Title level={2} className="heading">
+            {' '}
+            REGISTRATION
+          </Title>
 
-      {/* Form Section */}
-      <Col
-        xs={24}
-        sm={12}
-        md={12}
-        style={{
-          backgroundColor: '#ffffff',
-          padding: '10px',
-        }}
-      >
-        <Flex justify="center" align="center" style={{ height: '100%' }}>
           <Form
             layout="vertical"
-            style={{
-              width: '100%',
-              padding: '10px',
-              maxWidth: '750px',
-              minHeight: '100vh',
-            }}
-            // onFinish={onFormSubmit}
+            name="login"
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+            initialValues={{ remember: true }}
+            onFinish={onFinish}
+            autoComplete="off"
           >
-            <Title level={2} className="title">
-              REGISTRATION
-            </Title>
-
-            <Form.Item
-              label="Firstname"
+            <Form.Item<FieldType>
+              layout="vertical"
+              label="First Name"
               name="firstname"
               rules={[
-                { required: true, message: 'Please Enter Your Firstname' },
-              ]}
-            >
-              <Input
-                placeholder="Enter Your Firstname"
-                className="inputField"
-              />
-            </Form.Item>
-
-            <Form.Item
-              label="Lastname"
-              name="lastname"
-              rules={[
-                { required: true, message: 'Please Enter Your Lastname' },
-              ]}
-            >
-              <Input placeholder="Enter Your Lastname" className="inputField" />
-            </Form.Item>
-
-            <Form.Item
-              label="Email"
-              name="email"
-              rules={[
-                { required: true, message: 'Please Enter Your Email' },
+                { required: true, message: 'please enter your firstname' },
                 {
-                  type: 'email',
-                  message: 'Please enter a valid email address!',
+                  pattern: /^[A-Za-z\s]+$/,
+                  message: 'First name can only contain letters and spaces',
                 },
               ]}
             >
-              <Input placeholder="Enter Your Email" className="inputField" />
+              <Input
+                placeholder="First Name"
+                value={firstname}
+                onChange={handleFirstnameChange}
+                autoComplete="off"
+              />
+            </Form.Item>
+            <Form.Item<FieldType>
+              layout="vertical"
+              label="Last Name"
+              name="lastname"
+              rules={[
+                { required: true, message: 'please enter your lastname' },
+                {
+                  pattern: /^[A-Za-z\s]+$/,
+                  message: 'Lastname can only contain letters',
+                },
+              ]}
+            >
+              <Input
+                placeholder="Last Name"
+                value={lastname}
+                onChange={handleLastnameChange}
+                autoComplete="off"
+              />
+            </Form.Item>
+            <Form.Item<FieldType>
+              layout="vertical"
+              label="Email"
+              name="email"
+              rules={[
+                { required: true, message: 'please enter your email' },
+                { type: 'email', message: 'The email is not a valid email!' },
+              ]}
+            >
+              <Input
+                placeholder="email"
+                value={email}
+                onChange={handleEmailChange}
+                autoComplete="off"
+              />
             </Form.Item>
 
-            <Form.Item
+            <Form.Item<FieldType>
+              layout="vertical"
               label="Password"
               name="password"
               rules={[
-                { required: true, message: 'Please Enter Your Password' },
+                { required: true, message: 'please enter your password' },
+                { min: 8, message: 'Password must be at least 8 characters,' },
+                {
+                  pattern: /^(?=.*[A-Z])/,
+                  message: 'at least one capital letter,',
+                },
+                {
+                  pattern: /^(?=.*\d)/,
+                  message: 'at least one number,',
+                },
+                {
+                  pattern: /^(?=.*[!@#$%^&*])/,
+                  message: 'at least one special character',
+                },
               ]}
             >
               <Input.Password
                 placeholder="Enter Your Password"
-                className="inputField"
+                value={password}
+                onChange={handlePasswordChange}
+                autoComplete="off"
               />
             </Form.Item>
-
             <Form.Item
+              layout="vertical"
               label="Confirm Password"
               name="confirm_password"
               rules={[
@@ -153,30 +183,30 @@ const Signup: React.FC = () => {
                 className="inputField"
               />
             </Form.Item>
-
-            <Flex align="center" vertical>
-              <Form.Item style={{ textAlign: 'center' }}>
-                <Button type="primary" className="button" htmlType="submit">
-                  Signup
-                </Button>
-              </Form.Item>
-              <div>
-                <Text>Already registered? </Text>
-                <Text
-                  style={{ color: '#1890ff', cursor: 'pointer' }}
-                  onClick={() => {
-                    return navigate('/signin');
-                  }}
+            <Form.Item>
+              <div className="button-div">
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  className="green-button"
                 >
-                  Sign in
-                </Text>
-                <Text> here</Text>
+                  SIGN UP
+                </Button>
               </div>
-            </Flex>
+            </Form.Item>
+            {signupErr && (
+              <Form.Item>
+                <Paragraph className="login-message">{signupErr}</Paragraph>
+              </Form.Item>
+            )}
           </Form>
-        </Flex>
-      </Col>
-    </Row>
+          <div className="signup-link">
+            Don&apos;t have an account?
+            <a href="/signin">SignIn</a>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

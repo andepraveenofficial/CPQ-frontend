@@ -1,1 +1,0 @@
-export const LOGO_URL = "https://res.cloudinary.com/dwrwbjd3h/image/upload/v1719557647/CPQ-project/logo.png";
