@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import type { FormProps } from 'antd';
 import { Button, Form, Input, Typography } from 'antd';
-import '../index.css';
+import '../App.css';
 import { BASE_URL } from '../Services/APIs';
 
 type FieldType = {
@@ -14,15 +14,12 @@ type FieldType = {
 };
 
 const Signup: React.FC = () => {
-  const [firstname, setFirstname] = useState<string>('');
-  const [lastname, setLastname] = useState<string>('');
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
   const [signupErr, setSignupErr] = useState<string>('');
   const { Title, Paragraph } = Typography;
 
   const navigate = useNavigate();
   const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
+    console.log(values);
     try {
       await axios.post(`${BASE_URL}/api/v1/users`, values);
       navigate('/signin');
@@ -33,20 +30,6 @@ const Signup: React.FC = () => {
         }
       }
     }
-  };
-
-  const handleFirstnameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFirstname(e.target.value);
-  };
-  const handleLastnameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLastname(e.target.value);
-  };
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
-  };
-
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value);
   };
 
   return (
@@ -87,12 +70,7 @@ const Signup: React.FC = () => {
                 },
               ]}
             >
-              <Input
-                placeholder="First Name"
-                value={firstname}
-                onChange={handleFirstnameChange}
-                autoComplete="off"
-              />
+              <Input placeholder="First Name" autoComplete="off" />
             </Form.Item>
             <Form.Item<FieldType>
               layout="vertical"
@@ -106,12 +84,7 @@ const Signup: React.FC = () => {
                 },
               ]}
             >
-              <Input
-                placeholder="Last Name"
-                value={lastname}
-                onChange={handleLastnameChange}
-                autoComplete="off"
-              />
+              <Input placeholder="Last Name" autoComplete="off" />
             </Form.Item>
             <Form.Item<FieldType>
               layout="vertical"
@@ -122,12 +95,7 @@ const Signup: React.FC = () => {
                 { type: 'email', message: 'The email is not a valid email!' },
               ]}
             >
-              <Input
-                placeholder="email"
-                value={email}
-                onChange={handleEmailChange}
-                autoComplete="off"
-              />
+              <Input placeholder="email" autoComplete="off" />
             </Form.Item>
 
             <Form.Item<FieldType>
@@ -153,8 +121,6 @@ const Signup: React.FC = () => {
             >
               <Input.Password
                 placeholder="Enter Your Password"
-                value={password}
-                onChange={handlePasswordChange}
                 autoComplete="off"
               />
             </Form.Item>

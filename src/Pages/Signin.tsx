@@ -4,7 +4,7 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import type { FormProps } from 'antd';
 import { Button, Form, Input, Typography } from 'antd';
-import '../index.css';
+import '../App.css';
 import { BASE_URL } from '../Services/APIs';
 
 type FieldType = {
