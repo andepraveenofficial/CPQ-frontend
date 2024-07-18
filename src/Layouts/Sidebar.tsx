@@ -14,7 +14,7 @@ const menuItems: MenuItemType[] = [
   {
     key: 'proposals',
     label: 'Proposals',
-    link: '/proposals',
+    link: '/',
   },
   {
     key: 'subscriptions',
