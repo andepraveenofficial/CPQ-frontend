@@ -1,12 +1,8 @@
 import React from 'react';
-import Sidebar from '../Layouts/Sidebar';
+import Body from '../Layouts/Body';
 
 const Home: React.FC = () => {
-  return (
-    <div>
-      <Sidebar />
-    </div>
-  );
+  return <Body />;
 };
 
 export default Home;

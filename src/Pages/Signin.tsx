@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import type { FormProps } from 'antd';
@@ -12,12 +12,14 @@ type FieldType = {
   password: string;
 };
 const Signin: React.FC = () => {
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
   const [loginMessage, setLoginMessage] = useState<string>('');
   const { Paragraph, Title } = Typography;
-
   const navigate = useNavigate();
+
+  const jwtToken = Cookies.get('jwtToken');
+
+  if (jwtToken) return <Navigate to="/" />;
+
   const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
     try {
       const response = await axios.post(
@@ -30,18 +32,10 @@ const Signin: React.FC = () => {
     } catch (err) {
       if (axios.isAxiosError(err)) {
         if (err.response) {
-          setLoginMessage(err.response.data);
+          setLoginMessage(err.response.data.message);
         }
       }
     }
-  };
-
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
-  };
-
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value);
   };
 
   return (
@@ -78,12 +72,7 @@ const Signin: React.FC = () => {
                 { type: 'email', message: 'The email is not a valid email!' },
               ]}
             >
-              <Input
-                placeholder="email"
-                value={email}
-                onChange={handleEmailChange}
-                autoComplete="current-password"
-              />
+              <Input placeholder="email" autoComplete="current-password" />
             </Form.Item>
 
             <Form.Item<FieldType>
@@ -96,8 +85,6 @@ const Signin: React.FC = () => {
             >
               <Input.Password
                 placeholder="enter your password"
-                value={password}
-                onChange={handlePasswordChange}
                 autoComplete="current-password"
               />
             </Form.Item>

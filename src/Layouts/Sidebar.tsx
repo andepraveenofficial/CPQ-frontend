@@ -1,8 +1,7 @@
 import React from 'react';
 import { Layout, Menu, Button } from 'antd';
-import { Link } from 'react-router-dom';
-
-const { Sider } = Layout;
+import { Link, useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
 // Define interfaces
 interface MenuItemType {
@@ -39,54 +38,41 @@ const menuItems: MenuItemType[] = [
   },
 ];
 const Sidebar: React.FC = () => {
+  const navigate = useNavigate();
   const handleLogout = () => {
-    // Implement logout logic here
-    console.log('Logging out...');
+    Cookies.remove('jwtToken');
+    navigate('/signin');
   };
 
   return (
-    <Layout style={{ height: '100vh' }}>
-      <Sider
-        width={250}
-        theme="light"
+    <Layout.Sider width={250} theme="light" style={{ height: '100vh' }}>
+      <div
         style={{
-          height: '100%',
+          height: '100vh',
           display: 'flex',
           flexDirection: 'column',
+          justifyContent: 'space-between',
         }}
       >
-        <div
-          style={{
-            height: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-          }}
+        <Menu mode="inline" defaultSelectedKeys={['proposals']}>
+          {menuItems.map((item) => {
+            return (
+              <Menu.Item key={item.key}>
+                <Link to={item.link}>{item.label}</Link>
+              </Menu.Item>
+            );
+          })}
+        </Menu>
+        <Button
+          onClick={handleLogout}
+          style={{ margin: '16px' }}
+          type="primary"
+          danger
         >
-          <Menu
-            mode="inline"
-            defaultSelectedKeys={['proposals']}
-            style={{ flex: 1, borderRight: 0 }}
-          >
-            {menuItems.map((item) => {
-              return (
-                <Menu.Item key={item.key}>
-                  <Link to={item.link}>{item.label}</Link>
-                </Menu.Item>
-              );
-            })}
-          </Menu>
-          <Button
-            onClick={handleLogout}
-            style={{ margin: '16px' }}
-            type="primary"
-            danger
-          >
-            Logout
-          </Button>
-        </div>
-      </Sider>
-    </Layout>
+          Logout
+        </Button>
+      </div>
+    </Layout.Sider>
   );
 };
 

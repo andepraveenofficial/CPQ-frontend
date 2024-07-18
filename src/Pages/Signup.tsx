@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import type { FormProps } from 'antd';
+import Cookies from 'js-cookie';
 import { Button, Form, Input, Typography } from 'antd';
 import '../App.css';
 import { BASE_URL } from '../Services/APIs';
@@ -18,8 +19,10 @@ const Signup: React.FC = () => {
   const { Title, Paragraph } = Typography;
 
   const navigate = useNavigate();
+  const jwtToken = Cookies.get('jwtToken');
+
+  if (jwtToken) return <Navigate to="/" />;
   const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
-    console.log(values);
     try {
       await axios.post(`${BASE_URL}/api/v1/users`, values);
       navigate('/signin');
