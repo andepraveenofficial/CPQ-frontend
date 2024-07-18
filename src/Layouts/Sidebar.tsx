@@ -69,7 +69,7 @@ const Sidebar: React.FC = () => {
           type="primary"
           danger
         >
-          Logout
+          Signout
         </Button>
       </div>
     </Layout.Sider>
