@@ -4,8 +4,8 @@ import axios from 'axios';
 import type { FormProps } from 'antd';
 import Cookies from 'js-cookie';
 import { Button, Form, Input, Typography } from 'antd';
-import '../App.css';
-import { BASE_URL } from '../Services/APIs';
+import './signup.scss';
+import { BASE_URL } from '../../Services/APIs';
 
 type FieldType = {
   firstname: string;
