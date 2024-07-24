@@ -5,7 +5,7 @@ import type { FormProps } from 'antd';
 import Cookies from 'js-cookie';
 import { Button, Form, Input, Typography } from 'antd';
 import './signup.scss';
-import { BASE_URL } from '../../Services/APIs';
+import { SIGN_UP_URL } from '../../Backend/apis';
 
 type FieldType = {
   firstname: string;
@@ -24,7 +24,8 @@ const Signup: React.FC = () => {
   if (jwtToken) return <Navigate to="/" />;
   const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
     try {
-      await axios.post(`${BASE_URL}/api/v1/users`, values);
+      const url = SIGN_UP_URL;
+      await axios.post(url, values);
       navigate('/signin');
     } catch (err) {
       if (axios.isAxiosError(err)) {

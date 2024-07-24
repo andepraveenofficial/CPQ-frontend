@@ -5,7 +5,7 @@ import Cookies from 'js-cookie';
 import type { FormProps } from 'antd';
 import { Button, Form, Input, Typography } from 'antd';
 import './signin.scss';
-import { BASE_URL } from '../../Services/APIs';
+import { SIGN_IN_URL } from '../../Backend/apis';
 
 type FieldType = {
   email: string;
@@ -22,10 +22,8 @@ const Signin: React.FC = () => {
 
   const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
     try {
-      const response = await axios.post(
-        `${BASE_URL}/api/v1/users/login`,
-        values,
-      );
+      const url = SIGN_IN_URL;
+      const response = await axios.post(url, values);
       const { token } = response.data;
       Cookies.set('jwtToken', token, { expires: 1 });
       navigate('/');

@@ -1,24 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Table, Spin, Button } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
 import Cookies from 'js-cookie';
+import { IProduct } from '../../Interfaces/product.interface';
+import { FETCH_PRODUCTS_URL } from '../../Backend/apis';
 
-interface IProduct {
-  id: number;
-  name: string;
-  internal_name: string;
-  description: string;
-  charge_method: string;
-  currency: string;
-  unit_price: number;
-  status: string;
-  last_activity: string;
-}
+import {
+  fetchProductsFailure,
+  fetchProductsStart,
+  fetchProductsSuccess,
+} from '../../Store/slices/productSlice';
+import { RootState } from '../../Store/appStore';
 
 const ProductsTable: React.FC = () => {
-  const [data, setData] = useState<IProduct[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const dispatch = useDispatch();
+  const { products, isLoading, error } = useSelector((state: RootState) => {
+    return state.products;
+  });
 
   const columns: ColumnsType<IProduct> = [
     {
@@ -51,7 +51,6 @@ const ProductsTable: React.FC = () => {
           <Button
             type="dashed"
             onClick={() => {
-              // return handleStatusClick();
               console.log(record);
             }}
           >
@@ -62,34 +61,39 @@ const ProductsTable: React.FC = () => {
     },
   ];
 
+  // Methods
+  const fetchData = async () => {
+    try {
+      dispatch(fetchProductsStart());
+      const url = FETCH_PRODUCTS_URL;
+      const jwtToken = Cookies.get('jwtToken');
+
+      const response = await axios.get<{ data: IProduct[] }>(url, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${jwtToken}`,
+        },
+      });
+      const data = response.data?.data;
+      dispatch(fetchProductsSuccess(data));
+    } catch (err) {
+      dispatch(fetchProductsFailure('Error fetching products'));
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const url = 'http://localhost:5000/api/v1/products';
-        const jwtToken = Cookies.get('jwtToken');
-
-        const response = await axios.get<IProduct[]>(url, {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${jwtToken}`,
-          },
-        });
-        setData(response.data);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        setLoading(false);
-      }
-    };
-
     fetchData();
   }, []);
 
-  if (loading) {
+  if (isLoading) {
     return <Spin />;
   }
 
-  return <Table dataSource={data} columns={columns} rowKey="id" />;
+  if (error) {
+    return <div>{error}</div>;
+  }
+
+  return <Table dataSource={products} columns={columns} rowKey="id" />;
 };
 
 export default ProductsTable;

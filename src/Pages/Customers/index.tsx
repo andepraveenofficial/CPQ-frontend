@@ -1,24 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Table, Spin, Button } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
 import Cookies from 'js-cookie';
-
-interface ICustomer {
-  id: string;
-  legal_company_name: string;
-  default_currency: string;
-  address: string;
-  unit_floor: string;
-  city: string;
-  state: string;
-  postal_code: string;
-  country: string;
-}
+import { ICustomer } from '../../Interfaces/customer.interface';
+import { FETCH_CUSTOMERS_URL } from '../../Backend/apis';
+import {
+  fetchCustomersFailure,
+  fetchCustomersStart,
+  fetchCustomersSuccess,
+} from '../../Store/slices/customerSlice';
+import { RootState } from '../../Store/appStore';
 
 const CustomersTable: React.FC = () => {
-  const [data, setData] = useState<ICustomer[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const dispatch = useDispatch();
+  const { isLoading, customers, error } = useSelector((state: RootState) => {
+    return state.customers;
+  });
 
   const columns: ColumnsType<ICustomer> = [
     {
@@ -75,34 +74,39 @@ const CustomersTable: React.FC = () => {
     },
   ];
 
+  // Methods
+  const fetchData = async () => {
+    try {
+      dispatch(fetchCustomersStart());
+      const url = FETCH_CUSTOMERS_URL;
+      const jwtToken = Cookies.get('jwtToken');
+
+      const response = await axios.get<{ data: ICustomer[] }>(url, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${jwtToken}`,
+        },
+      });
+      const data = response.data?.data;
+      dispatch(fetchCustomersSuccess(data));
+    } catch (err) {
+      dispatch(fetchCustomersFailure('Error fetching Customers'));
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const url = 'http://localhost:5000/api/v1/customers';
-        const jwtToken = Cookies.get('jwtToken');
-
-        const response = await axios.get<ICustomer[]>(url, {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${jwtToken}`,
-          },
-        });
-        setData(response.data);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        setLoading(false);
-      }
-    };
-
     fetchData();
   }, []);
 
-  if (loading) {
+  if (isLoading) {
     return <Spin />;
   }
 
-  return <Table dataSource={data} columns={columns} rowKey="id" />;
+  if (error) {
+    return <div>{error}</div>;
+  }
+
+  return <Table dataSource={customers} columns={columns} rowKey="id" />;
 };
 
 export default CustomersTable;
