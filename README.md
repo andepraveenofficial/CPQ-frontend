@@ -15,4 +15,6 @@
   - Add Tag `docker tag cpq-frontend:0.0.3 andepraveen/cpq-frontend:0.0.3`
   - push `docker push andepraveen/cpq-frontend:0.0.3`
 
-* Run yml file for containers: `docker compose up -d`
+* Run yml file for containers: `docker compose up -d`  
+
+
