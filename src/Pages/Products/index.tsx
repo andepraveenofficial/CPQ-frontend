@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
-import { Table, Spin, Button } from 'antd';
+import { Button } from 'antd';
 import { ColumnsType } from 'antd/es/table';
-import axios from 'axios';
-import { useDispatch, useSelector } from 'react-redux';
-import Cookies from 'js-cookie';
+
+import { useSelector } from 'react-redux';
+
 import { IProduct } from '../../Interfaces/product.interface';
 import { FETCH_PRODUCTS_URL } from '../../Backend/apis';
 
@@ -13,9 +13,10 @@ import {
   fetchProductsSuccess,
 } from '../../Store/slices/productSlice';
 import { RootState } from '../../Store/appStore';
+import TableWrapper from '../../Wrappers/TableWrapper';
+import useFetchData from '../../Hooks/useFetchData';
 
 const ProductsTable: React.FC = () => {
-  const dispatch = useDispatch();
   const { products, isLoading, error } = useSelector((state: RootState) => {
     return state.products;
   });
@@ -62,7 +63,8 @@ const ProductsTable: React.FC = () => {
   ];
 
   // Methods
-  const fetchData = async () => {
+  /*
+    const fetchData = async () => {
     try {
       dispatch(fetchProductsStart());
       const url = FETCH_PRODUCTS_URL;
@@ -81,19 +83,30 @@ const ProductsTable: React.FC = () => {
     }
   };
 
+  */
+
+  const dataDetails = {
+    url: FETCH_PRODUCTS_URL,
+    startAction: fetchProductsStart,
+    successAction: fetchProductsSuccess,
+    failureAction: fetchProductsFailure,
+  };
+
+  const fetchData = useFetchData(dataDetails);
+
   useEffect(() => {
     fetchData();
   }, []);
 
-  if (isLoading) {
-    return <Spin />;
-  }
-
-  if (error) {
-    return <div>{error}</div>;
-  }
-
-  return <Table dataSource={products} columns={columns} rowKey="id" />;
+  return (
+    <TableWrapper<IProduct>
+      loading={isLoading}
+      data={products}
+      error={error}
+      columns={columns}
+      rowKey="id"
+    />
+  );
 };
 
 export default ProductsTable;

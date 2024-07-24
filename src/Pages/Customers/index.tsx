@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
-import { Table, Spin, Button } from 'antd';
 import { ColumnsType } from 'antd/es/table';
-import axios from 'axios';
-import { useDispatch, useSelector } from 'react-redux';
-import Cookies from 'js-cookie';
+
+import { useSelector } from 'react-redux';
+
+import { Button } from 'antd';
 import { ICustomer } from '../../Interfaces/customer.interface';
 import { FETCH_CUSTOMERS_URL } from '../../Backend/apis';
 import {
@@ -12,9 +12,10 @@ import {
   fetchCustomersSuccess,
 } from '../../Store/slices/customerSlice';
 import { RootState } from '../../Store/appStore';
+import TableWrapper from '../../Wrappers/TableWrapper';
+import useFetchData from '../../Hooks/useFetchData';
 
 const CustomersTable: React.FC = () => {
-  const dispatch = useDispatch();
   const { isLoading, customers, error } = useSelector((state: RootState) => {
     return state.customers;
   });
@@ -74,39 +75,28 @@ const CustomersTable: React.FC = () => {
     },
   ];
 
-  // Methods
-  const fetchData = async () => {
-    try {
-      dispatch(fetchCustomersStart());
-      const url = FETCH_CUSTOMERS_URL;
-      const jwtToken = Cookies.get('jwtToken');
-
-      const response = await axios.get<{ data: ICustomer[] }>(url, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${jwtToken}`,
-        },
-      });
-      const data = response.data?.data;
-      dispatch(fetchCustomersSuccess(data));
-    } catch (err) {
-      dispatch(fetchCustomersFailure('Error fetching Customers'));
-    }
+  const dataDetails = {
+    url: FETCH_CUSTOMERS_URL,
+    startAction: fetchCustomersStart,
+    successAction: fetchCustomersSuccess,
+    failureAction: fetchCustomersFailure,
   };
+
+  const fetchData = useFetchData(dataDetails);
 
   useEffect(() => {
     fetchData();
   }, []);
 
-  if (isLoading) {
-    return <Spin />;
-  }
-
-  if (error) {
-    return <div>{error}</div>;
-  }
-
-  return <Table dataSource={customers} columns={columns} rowKey="id" />;
+  return (
+    <TableWrapper<ICustomer>
+      loading={isLoading}
+      data={customers}
+      error={error}
+      columns={columns}
+      rowKey="id"
+    />
+  );
 };
 
 export default CustomersTable;

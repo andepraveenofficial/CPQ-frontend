@@ -1,9 +1,7 @@
 import React, { useEffect } from 'react';
-import { Table, Spin, Button } from 'antd';
+import { Button } from 'antd';
 import { ColumnsType } from 'antd/es/table';
-import axios from 'axios';
-import { useDispatch, useSelector } from 'react-redux';
-import Cookies from 'js-cookie';
+import { useSelector } from 'react-redux';
 import { IProposal } from '../../Interfaces/proposal.interface';
 import { FETCH_PROPOSALS_URL } from '../../Backend/apis';
 
@@ -13,9 +11,10 @@ import {
   fetchProposalsSuccess,
 } from '../../Store/slices/proposalSlice';
 import { RootState } from '../../Store/appStore';
+import TableWrapper from '../../Wrappers/TableWrapper';
+import useFetchData from '../../Hooks/useFetchData';
 
 const ProposalsTable: React.FC = () => {
-  const dispatch = useDispatch();
   const { proposals, isLoading, error } = useSelector((state: RootState) => {
     return state.proposals;
   });
@@ -61,39 +60,28 @@ const ProposalsTable: React.FC = () => {
     },
   ];
 
-  // Methods
-  const fetchData = async () => {
-    try {
-      dispatch(fetchProposalsStart());
-      const url = FETCH_PROPOSALS_URL;
-      const jwtToken = Cookies.get('jwtToken');
-
-      const response = await axios.get<{ data: IProposal[] }>(url, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${jwtToken}`,
-        },
-      });
-      const data = response.data?.data;
-      dispatch(fetchProposalsSuccess(data));
-    } catch (err) {
-      dispatch(fetchProposalsFailure('Error fetching proposals'));
-    }
+  const dataDetails = {
+    url: FETCH_PROPOSALS_URL,
+    startAction: fetchProposalsStart,
+    successAction: fetchProposalsSuccess,
+    failureAction: fetchProposalsFailure,
   };
+
+  const fetchData = useFetchData(dataDetails);
 
   useEffect(() => {
     fetchData();
   }, []);
 
-  if (isLoading) {
-    return <Spin />;
-  }
-
-  if (error) {
-    return <div>{error}</div>;
-  }
-
-  return <Table dataSource={proposals} columns={columns} rowKey="id" />;
+  return (
+    <TableWrapper<IProposal>
+      loading={isLoading}
+      data={proposals}
+      error={error}
+      columns={columns}
+      rowKey="id"
+    />
+  );
 };
 
 export default ProposalsTable;
