@@ -4,6 +4,7 @@ import { configureStore } from '@reduxjs/toolkit';
 /* -----> Slices <----- */
 import productSlice from './slices/productSlice';
 import customerSlice from './slices/customerSlice';
+import proposalSlice from './slices/proposalSlice';
 
 /* -----> Configuration <----- */
 const appStore = configureStore({
@@ -11,6 +12,7 @@ const appStore = configureStore({
     // combine all slice reducers
     products: productSlice,
     customers: customerSlice,
+    proposals: proposalSlice,
   },
 });
 
