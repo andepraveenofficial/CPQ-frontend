@@ -9,6 +9,7 @@ import Products from './Pages/Products';
 import Customers from './Pages/Customers';
 import Subscriptions from './Pages/Subscriptions';
 import Invoices from './Pages/Invoices';
+import CreateNewProposal from './Pages/Proposals/CreateNewProposal';
 
 const App: React.FC = () => {
   return (
@@ -23,6 +24,7 @@ const App: React.FC = () => {
               <Route path="subscriptions" element={<Subscriptions />} />
               <Route path="invoices" element={<Invoices />} />
             </Route>
+            <Route path="proposals/new" element={<CreateNewProposal />} />
           </Route>
           <Route path="/signin" element={<Signin />} />
           <Route path="/signup" element={<Signup />} />
