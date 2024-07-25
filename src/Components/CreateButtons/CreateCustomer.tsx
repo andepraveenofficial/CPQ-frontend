@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Modal, Form, Input, Row, Col, notification } from 'antd';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 import { ICustomer } from '../../Interfaces/customer.interface';
 import { ADD_CUSTOMER_URL, FETCH_CUSTOMERS_URL } from '../../Backend/apis';
 import {
