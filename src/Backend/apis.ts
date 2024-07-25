@@ -8,3 +8,4 @@ export const FETCH_PRODUCTS_URL = `${BASE_URL}/v1/products`;
 export const FETCH_CUSTOMERS_URL = `${BASE_URL}/v1/customers`;
 export const FETCH_PROPOSALS_URL = `${BASE_URL}/v1/proposals`;
 export const ADD_CUSTOMER_URL = `${BASE_URL}/v1/customers`;
+export const ADD_PRODUCTS_URL = `${BASE_URL}/v1/products`;

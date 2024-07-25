@@ -8,19 +8,62 @@ import {
   Col,
   Select,
   InputNumber,
+  notification,
 } from 'antd';
+import axios from 'axios';
+import Cookies from 'js-cookie';
+import { ADD_PRODUCTS_URL, FETCH_PRODUCTS_URL } from '../../Backend/apis';
+import {
+  fetchProductsFailure,
+  fetchProductsStart,
+  fetchProductsSuccess,
+} from '../../Store/slices/productSlice';
+import useFetchData from '../../Hooks/useFetchData';
 
 const CreateProduct: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [form] = Form.useForm();
 
+  // Methods
   const handleOk = () => {
     form.submit();
   };
 
-  const onFinish = (values: any) => {
-    console.log('Form values:', values);
-    setOpen(false);
+  // Update Products Page
+  const dataDetails = {
+    url: FETCH_PRODUCTS_URL,
+    startAction: fetchProductsStart,
+    successAction: fetchProductsSuccess,
+    failureAction: fetchProductsFailure,
+  };
+
+  const fetchData = useFetchData(dataDetails);
+
+  const onFinish = async (values: any) => {
+    try {
+      const url = ADD_PRODUCTS_URL;
+      const jwtToken = Cookies.get('jwtToken');
+      const response = await axios.post(url, values, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${jwtToken}`,
+        },
+      });
+      console.log('API response:', response.data);
+      notification.success({
+        message: 'Product Created',
+        description: 'The product has been successfully created.',
+      });
+      setOpen(false);
+      form.resetFields();
+      fetchData(); // Re-fetch customer data
+    } catch (error) {
+      console.error('API error:', error);
+      notification.error({
+        message: 'Error',
+        description: 'There was an error creating the product.',
+      });
+    }
   };
 
   return (
@@ -137,6 +180,20 @@ const CreateProduct: React.FC = () => {
                 ]}
               >
                 <InputNumber min={0} />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                label="Status"
+                name="status"
+                rules={[
+                  { required: true, message: 'Please select the status!' },
+                ]}
+              >
+                <Select>
+                  <Select.Option value="active">Active</Select.Option>
+                  <Select.Option value="inactive">Inactive</Select.Option>
+                </Select>
               </Form.Item>
             </Col>
           </Row>
