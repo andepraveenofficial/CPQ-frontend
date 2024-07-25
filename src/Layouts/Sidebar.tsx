@@ -2,6 +2,7 @@ import React from 'react';
 import { Layout, Menu, Button } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
+import styles from './Sidebar.module.scss';
 
 // Define interfaces
 interface MenuItemType {
@@ -55,6 +56,7 @@ const Sidebar: React.FC = () => {
         }}
       >
         <Menu mode="inline" defaultSelectedKeys={['proposals']}>
+          <div className={styles.logo}>CPQ</div>
           {menuItems.map((item) => {
             return (
               <Menu.Item key={item.key}>
