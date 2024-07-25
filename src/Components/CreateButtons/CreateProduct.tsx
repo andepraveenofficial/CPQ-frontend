@@ -12,13 +12,9 @@ import {
 } from 'antd';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import { ADD_PRODUCTS_URL, FETCH_PRODUCTS_URL } from '../../Backend/apis';
-import {
-  fetchProductsFailure,
-  fetchProductsStart,
-  fetchProductsSuccess,
-} from '../../Store/slices/productSlice';
-import useFetchData from '../../Hooks/useFetchData';
+import { ADD_PRODUCTS_URL } from '../../Backend/apis';
+
+import useFetchProductsData from '../../Hooks/useFetchProductsData';
 
 const CreateProduct: React.FC = () => {
   const [open, setOpen] = useState(false);
@@ -29,15 +25,7 @@ const CreateProduct: React.FC = () => {
     form.submit();
   };
 
-  // Update Products Page
-  const dataDetails = {
-    url: FETCH_PRODUCTS_URL,
-    startAction: fetchProductsStart,
-    successAction: fetchProductsSuccess,
-    failureAction: fetchProductsFailure,
-  };
-
-  const fetchData = useFetchData(dataDetails);
+  const fetchProductsData = useFetchProductsData();
 
   const onFinish = async (values: any) => {
     try {
@@ -56,7 +44,7 @@ const CreateProduct: React.FC = () => {
       });
       setOpen(false);
       form.resetFields();
-      fetchData(); // Re-fetch customer data
+      fetchProductsData(); // Re-fetch customer data
     } catch (error) {
       console.error('API error:', error);
       notification.error({

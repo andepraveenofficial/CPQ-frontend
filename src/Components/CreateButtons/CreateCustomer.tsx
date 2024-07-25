@@ -3,13 +3,9 @@ import { Button, Modal, Form, Input, Row, Col, notification } from 'antd';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { ICustomer } from '../../Interfaces/customer.interface';
-import { ADD_CUSTOMER_URL, FETCH_CUSTOMERS_URL } from '../../Backend/apis';
-import {
-  fetchCustomersFailure,
-  fetchCustomersStart,
-  fetchCustomersSuccess,
-} from '../../Store/slices/customerSlice';
-import useFetchData from '../../Hooks/useFetchData';
+import { ADD_CUSTOMER_URL } from '../../Backend/apis';
+
+import useFetchCustomersData from '../../Hooks/useFetchCustomersData';
 
 const CreateCustomer: React.FC = () => {
   const [open, setOpen] = useState(false);
@@ -20,15 +16,7 @@ const CreateCustomer: React.FC = () => {
     form.submit();
   };
 
-  // Update Customers Page
-  const dataDetails = {
-    url: FETCH_CUSTOMERS_URL,
-    startAction: fetchCustomersStart,
-    successAction: fetchCustomersSuccess,
-    failureAction: fetchCustomersFailure,
-  };
-
-  const fetchData = useFetchData(dataDetails);
+  const fetchCustomersData = useFetchCustomersData();
 
   const onFinish = async (values: ICustomer) => {
     try {
@@ -47,7 +35,7 @@ const CreateCustomer: React.FC = () => {
       });
       setOpen(false);
       form.resetFields();
-      fetchData(); // Re-fetch customer data
+      fetchCustomersData(); // Re-fetch customer data
     } catch (error) {
       console.error('API error:', error);
       notification.error({
